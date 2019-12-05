@@ -7,7 +7,10 @@ import (
 	"github.com/phpxin/mdblog/tools/log"
 	"github.com/phpxin/mdblog/tools/strutils"
 	"html/template"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
@@ -40,6 +43,31 @@ func InitServer() {
 // http 请求代理函数，路由函数
 func RpcHandle(w http.ResponseWriter, r *http.Request){
 	defer r.Body.Close()
+
+	if r.URL.Path[:10]=="/resources" {
+		contentType := "text/plain"
+		fpath := conf.ConfigInst.Resourcepath+r.URL.Path[10:]
+		switch filepath.Ext(fpath) {
+		case ".css":
+			contentType="text/css"
+			break
+		case ".js":
+			contentType="text/javascript"
+			break
+		}
+
+		fp,err := os.Open(fpath)
+		if err!=nil {
+			w.WriteHeader(404)
+			return
+		}
+
+		defer fp.Close()
+
+		w.Header().Set("Content-Type", contentType)
+		io.Copy(w,fp) // io copy 会调用 sendfile 提升传输效率
+		return
+	}
 
 	// @TODO BeforeRouter 这里可以做参数校验、权限验证等中间件操作
 	startTime := time.Now().Nanosecond()
@@ -75,8 +103,9 @@ func RpcHandle(w http.ResponseWriter, r *http.Request){
 	endTime := time.Now().Nanosecond()
 	log.Info("performance", "use time %d nano", endTime-startTime)
 
-	w.Header().Set("Content-Type", hRes.ContentType)
+	w.Header().Set("Content-Type", "text/html;charset=utf-8")
 	w.Write(hRes.Content)
+
 }
 
 func apiError(w http.ResponseWriter, code int32, msg string) {

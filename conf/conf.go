@@ -14,6 +14,7 @@ var (
 type Config struct {
 	RpcHost string `json:"rpchost"`
 	Storagepath string `json:"storagepath"`
+	Resourcepath string `json:"resourcepath"`
 }
 
 func ParseConfig(cpath string) error {

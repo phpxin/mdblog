@@ -1,10 +1,12 @@
 package core
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/phpxin/mdblog/conf"
 	"github.com/phpxin/mdblog/tools/log"
 	"github.com/phpxin/mdblog/tools/strutils"
+	"html/template"
 	"net/http"
 	"reflect"
 	"strings"
@@ -120,9 +122,22 @@ func apiSuccess(w http.ResponseWriter, data map[string]interface{})  {
 	return
 }
 
-func HtmlResponse(content []byte) *HttpResponse {
+func HtmlResponse(templateFile string, vars interface{}) *HttpResponse {
+	buf := make([]byte, 0)
+	wbf := bytes.NewBuffer(buf)
+
+	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath+"/htmls/"+templateFile+".html")
+	//执行模板
+	err := t.Execute(wbf, vars)
+	if err!=nil {
+		return &HttpResponse{
+			ContentType: "text/html",
+			Content:     []byte("read template wrong"),
+		}
+	}
+
 	return &HttpResponse{
 		ContentType: "text/html",
-		Content:     content,
+		Content:     wbf.Bytes(),
 	}
 }

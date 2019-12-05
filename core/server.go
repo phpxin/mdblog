@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/phpxin/mdblog/conf"
 	"github.com/phpxin/mdblog/tools/log"
-	"gopkg.in/russross/blackfriday.v2"
-	"io/ioutil"
+	"github.com/phpxin/mdblog/tools/strutils"
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -38,28 +38,39 @@ func InitServer() {
 // http 请求代理函数，路由函数
 func RpcHandle(w http.ResponseWriter, r *http.Request){
 	defer r.Body.Close()
-	// BeforeRouter 这里可以做参数校验、权限验证等中间件操作
+
+	// @TODO BeforeRouter 这里可以做参数校验、权限验证等中间件操作
 	startTime := time.Now().Nanosecond()
+	moduleStr := "index"
+	action := "index" // 默认方法是 IndexController.Index 方法
 
-	var act func (*http.Request) *HttpResponse
-
-	switch r.URL.Path {
-	case "/detail":
-		act = detail
-		break
-	case "/":
-		act = index
-		break
-	default:
-		w.WriteHeader(404)
-		break
+	if r.URL.Path != "" && r.URL.Path!="/" {
+		routerGroup := strings.Split(strings.ToLower(strings.Trim(r.URL.Path, "/")), "/")
+		moduleStr = routerGroup[0]
+		if len(routerGroup) > 1 {
+			action = routerGroup[1]
+		}
 	}
 
-	// AfterRouter 这里可以记录程序请求日志、统计程序时长等中间件操作
+	module,ok := routerTable[moduleStr]
+	if !ok {
+		w.WriteHeader(404)
+		return
+	}
 
-	hRes := act(r)
+	action = strutils.UcFirst(action)
+	obj := reflect.ValueOf(module)
+	method := obj.MethodByName(action)
+	if method.Kind() == reflect.Invalid {
+		w.WriteHeader(404)
+		return
+	}
+
+	rets := method.Call([]reflect.Value{reflect.ValueOf(r)})
+	hRes := rets[0].Interface().(*HttpResponse)
+
+	// @TODO AfterRouter 这里可以记录程序请求日志、统计程序时长等中间件操作
 	endTime := time.Now().Nanosecond()
-
 	log.Info("performance", "use time %d nano", endTime-startTime)
 
 	w.Header().Set("Content-Type", hRes.ContentType)
@@ -114,22 +125,4 @@ func HtmlResponse(content []byte) *HttpResponse {
 		ContentType: "text/html",
 		Content:     content,
 	}
-}
-
-func detail(r *http.Request) (*HttpResponse) {
-
-	htmlContents,_ := ioutil.ReadFile("./resources/htmls/detail.html")
-	// @todo 接收文章名称，获取文章正文
-	contents,_ := ioutil.ReadFile("/Users/leo/Documents/Sites/git/phpxin.github.io/_draft/redis.md")
-	output := blackfriday.Run(contents)
-	htmlResult := strings.Replace(string(htmlContents), "#contents#", string(output), 1)
-
-	return HtmlResponse([]byte(htmlResult))
-}
-
-// http : /addtask
-// 执行爬虫任务
-func index(r *http.Request) (*HttpResponse) {
-
-	return HtmlResponse([]byte("this is index"))
 }

@@ -54,6 +54,13 @@ func RpcHandle(w http.ResponseWriter, r *http.Request){
 		case ".js":
 			contentType="text/javascript"
 			break
+		case ".jpg":
+		case ".jpeg":
+			contentType="image/jpeg"
+			break
+		case ".png":
+			contentType="image/png"
+			break
 		}
 
 		fp,err := os.Open(fpath)

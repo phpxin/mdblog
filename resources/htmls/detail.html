@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Marked in the browser</title>
+    <!---<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">-->
+    <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/a11y-dark.css">
+    <style>
+        .clean{clear:both;}
+        #header{height:100px;background: #BBFFFF; width:1000px; margin: 0 auto;}
+        #main{height: auto; background: #AEEEEE; width: 1000px; margin: 0 auto;}
+        #m-left{height: 100%; background: #FAEBD7; width: 200px; float:left;}
+        #content{height: auto; background: #FFDAB9; width: 780px;float:left; padding: 10px;}
+        #footer{height:100px;background: #FFFACD; width: 1000px; margin: 0 auto;}
+    </style>
+</head>
+<body>
+<div id="header"> This is the Website </div>
+<div id="main">
+    <div id="m-left">sidebar</div>
+    <div id="content">#contents#</div>
+    <div class="clean"></div>
+</div>
+<div id="footer">
+
+    Thanks for reading!
+</div>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>
+    hljs.configure({
+        tabReplace: '    '
+    }) ;
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('code').forEach((block) => {
+            console.log(block);
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
+</body>
+</html>

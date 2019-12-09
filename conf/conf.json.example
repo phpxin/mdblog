@@ -1,5 +1,6 @@
 {
   "rpchost":"127.0.0.1:8010",
   "storagepath": "./storage",
-  "resourcepath": "./resoures"
+  "resourcepath": "./resources",
+  "docroot": "/data/docroot"
 }

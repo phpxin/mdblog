@@ -44,7 +44,7 @@ func InitServer() {
 func RpcHandle(w http.ResponseWriter, r *http.Request){
 	defer r.Body.Close()
 
-	if r.URL.Path[:10]=="/resources" {
+	if len(r.URL.Path)>9 && r.URL.Path[:10]=="/resources" {
 		contentType := "text/plain"
 		fpath := conf.ConfigInst.Resourcepath+r.URL.Path[10:]
 		switch filepath.Ext(fpath) {
@@ -115,47 +115,31 @@ func RpcHandle(w http.ResponseWriter, r *http.Request){
 
 }
 
-func apiError(w http.ResponseWriter, code int32, msg string) {
+func ApiError(code int32, msg string) *HttpResponse {
 	ret := &ApiRet{
 		Code:code,
 		Msg:msg,
 	}
 
-	retj,err := json.Marshal(ret)
-	if err!=nil {
-		log.Error("system", "marshal json error,%s", err.Error())
-		return
+	retj,_ := json.Marshal(ret)
+	return &HttpResponse{
+		ContentType: "application/json",
+		Content:     retj,
 	}
-
-	_,err = w.Write(retj)
-	if err!=nil {
-		log.Error("system", "response error ,%s", err.Error())
-		return
-	}
-
-	return
 }
 
-func apiSuccess(w http.ResponseWriter, data map[string]interface{})  {
+func ApiSuccess(data map[string]interface{}) *HttpResponse {
 	ret := &ApiRet{
 		Code:API_SUCCESS,
 		Msg:"",
 		Data:data,
 	}
 
-	retj,err := json.Marshal(ret)
-	if err!=nil {
-		log.Error("system", "marshal json error,%s", err.Error())
-		return
+	retj,_ := json.Marshal(ret)
+	return &HttpResponse{
+		ContentType: "application/json",
+		Content:     retj,
 	}
-
-	_,err = w.Write(retj)
-	if err!=nil {
-		log.Error("system", "response error ,%s", err.Error())
-		return
-	}
-
-	return
 }
 
 func HtmlResponse(templateFile string, vars interface{}) *HttpResponse {

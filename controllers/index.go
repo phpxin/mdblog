@@ -10,9 +10,19 @@ type IndexController struct {
 }
 
 func (ctrl *IndexController) Index(r *http.Request) (resp *core.HttpResponse) {
-	resp = &core.HttpResponse{
-		Content:     []byte("It works."),
-	}
+	return core.HtmlResponse("index", struct{
+		List map[string]*core.TreeFolder
+	}{
+		core.DocsIndexer ,
+	})
+}
 
-	return resp
+func (ctrl *IndexController) Regenerate(r *http.Request) (resp *core.HttpResponse) {
+	err := core.GenerateTreeFolder()
+	if err!=nil {
+		return core.ApiError(core.API_ERR_MSG, err.Error())
+	}
+	return core.ApiSuccess(map[string]interface{}{
+		"msg":"generate success",
+	})
 }

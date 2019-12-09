@@ -27,6 +27,13 @@ func main() {
 	// 2. 初始化日志
 	logger.InitLogger(conf.ConfigInst.Storagepath+"/logs", "20060102")
 
+	// 初始化文档结构树
+	err = core.GenerateTreeFolder()
+	if err!=nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
 	// 3. 加载路由
 	core.Router(&controllers.BlogController{})
 	core.Router(&controllers.IndexController{})

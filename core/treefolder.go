@@ -28,6 +28,7 @@ type TreeFolder struct {
 var (
 	treeFolder *TreeFolder
 	DocsIndexer = make(map[string]*TreeFolder)
+	SubjectIndexer = make(map[string]*TreeFolder)
 )
 
 func GetTreeFolder() *TreeFolder {
@@ -107,6 +108,7 @@ func generateTreeFolder(dirPath string) (*TreeFolder, error) {
 			}
 
 			treeFolder.Children = append(treeFolder.Children, cTreeFolder)
+			SubjectIndexer[cTreeFolder.Name] = cTreeFolder
 
 		}else{
 			if filepath.Ext(fitem.Name())==".md" {

@@ -13,15 +13,38 @@ type BlogController struct {
 }
 
 func (ctrl *BlogController) Index(r *http.Request) (resp *core.HttpResponse) {
-	return core.HtmlResponse("index", struct{
-		List map[string]*core.TreeFolder
+	qStr := r.URL.Query()
+	subject := qStr.Get("subject")
+
+	obj,ok := core.SubjectIndexer[subject]
+	if !ok {
+		return core.HtmlResponse("errors/404", nil)
+	}
+
+	subjects := make([]*core.TreeFolder, 0)
+	articles := make([]*core.TreeFolder, 0)
+
+	for _,item := range obj.Children {
+		if len(item.Children)>0 {
+			subjects = append(subjects, item)
+		}else{
+			articles = append(articles, item)
+		}
+	}
+
+	return core.HtmlResponse("subject", struct{
+		Menu template.HTML
+		Subjects []*core.TreeFolder
+		Articles []*core.TreeFolder
 	}{
-		core.DocsIndexer ,
+		template.HTML(Menu) ,
+		subjects ,
+		articles,
 	})
 }
 
 func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
-	// @todo 接收文章名称，获取文章正文
+	// @todo 全局参数获取、过滤、格式化、校验插件
 	qStr := r.URL.Query()
 	mdname := qStr.Get("md")
 

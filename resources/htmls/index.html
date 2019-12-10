@@ -23,13 +23,13 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Brand</a>
+                <a class="navbar-brand" href="/">Index</a>
             </div>
-
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
+                {{.Menu}}
+                <!--<ul class="nav navbar-nav">
                     <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
                     <li><a href="#">Link</a></li>
                     <li class="dropdown">
@@ -75,10 +75,6 @@
                             </li>
                         </ul>
                     </li>
-
-                    {{if .Menu.Children}}
-                        <li>124</li>
-                    {{end}}
                 </ul>
                 <form class="navbar-form navbar-left">
                     <div class="form-group">
@@ -98,7 +94,7 @@
                             <li><a href="#">Separated link</a></li>
                         </ul>
                     </li>
-                </ul>
+                </ul>-->
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>

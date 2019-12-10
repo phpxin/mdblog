@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/phpxin/mdblog/conf"
 	"github.com/phpxin/mdblog/controllers"
-	"github.com/phpxin/mdblog/tools/logger"
 	"github.com/phpxin/mdblog/core"
+	"github.com/phpxin/mdblog/tools/logger"
 	"os"
 )
 
@@ -33,6 +33,8 @@ func main() {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
+
+	controllers.InitController()
 
 	// 3. 加载路由
 	core.Router(&controllers.BlogController{})

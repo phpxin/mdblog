@@ -13,9 +13,11 @@ func (ctrl *IndexController) Index(r *http.Request) (resp *core.HttpResponse) {
 
 	return core.HtmlResponse("index", struct{
 		List map[string]*core.TreeFolder
+		Subjects map[string]*core.TreeFolder
 		Menu template.HTML
 	}{
 		core.DocsIndexer ,
+		core.SubjectIndexer,
 		template.HTML(Menu) ,
 	})
 }

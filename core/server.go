@@ -150,6 +150,7 @@ func HtmlResponse(templateFile string, vars interface{}) *HttpResponse {
 	//执行模板
 	err := t.Execute(wbf, vars)
 	if err!=nil {
+		log.Error("", "read template wrong, %s", err.Error())
 		return &HttpResponse{
 			ContentType: "text/html",
 			Content:     []byte("read template wrong"),

@@ -10,8 +10,9 @@
 <body>
 <div class="container-fluid">
     <div class="page-header">
-        <h1>Example page header <small>Subtext for header</small></h1>
+        <h1>Awesome Blog <small>This is an awesome blog that designed by Leo.</small></h1>
     </div>
+
 
     <nav class="navbar navbar-default">
         <div class="container-fluid">
@@ -98,14 +99,54 @@
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="list-group">
+                {{range $k,$v := .List}}
+
+                    <a href="/blog/detail?md={{$v.Name}}" class="list-group-item ">
+                        <h4 class="list-group-item-heading">{{$v.Title}}</h4>
+                        <p class="list-group-item-text">{{$v.Title}}</p>
+                    </a>
+
+                {{end}}
+                </div>
+            </div>
+            <div class="col-lg-3">
+
+                {{range $k,$v := .Subjects}}
+                <div class="panel panel-default">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading">{{$v.Title}}</div>
+                    <div class="panel-body">
+                        <p>{{$v.Title}}</p>
+                    </div>
+
+                    <!-- List group -->
+                    <ul class="list-group">
+                        {{if $v.Children}}
+                            {{range $k2,$v2 := $v.Children}}
+                                {{if not $v2.Children}}
+                                    <li class="list-group-item">{{$v2.Title}}</li>
+                                {{end}}
+                            {{end}}
+                        {{end}}
+
+                    </ul>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+
 </div>
 
 
 <ul>
 
-    {{range $k,$v := .List}}
-    <li><a href="/blog/detail?md={{$v.Name}}">{{$v.Title}}</a></li>
-    {{end}}
+
 
 
 </ul>

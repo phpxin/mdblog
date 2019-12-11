@@ -11,7 +11,7 @@ type IndexController struct {
 
 func (ctrl *IndexController) Index(r *http.Request) (resp *core.HttpResponse) {
 
-	return core.HtmlResponse("index", struct{
+	return core.HtmlResponse("index2", struct{
 		List map[string]*core.TreeFolder
 		Subjects map[string]*core.TreeFolder
 		Menu template.HTML

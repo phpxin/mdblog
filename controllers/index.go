@@ -23,10 +23,12 @@ func (ctrl *IndexController) Index(r *http.Request) (resp *core.HttpResponse) {
 }
 
 func (ctrl *IndexController) Regenerate(r *http.Request) (resp *core.HttpResponse) {
+
 	err := core.GenerateTreeFolder()
 	if err!=nil {
 		return core.ApiError(core.API_ERR_MSG, err.Error())
 	}
+	Menu = menuHtml(core.GetTreeFolder())
 	return core.ApiSuccess(map[string]interface{}{
 		"msg":"generate success",
 	})

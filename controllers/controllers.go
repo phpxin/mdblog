@@ -1,6 +1,8 @@
 package controllers
 
-import "github.com/phpxin/mdblog/core"
+import (
+	"github.com/phpxin/mdblog/core"
+)
 
 var (
 	Menu string

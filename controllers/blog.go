@@ -109,10 +109,16 @@ func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
 	output := blackfriday.Run(contents)
 
 	return core.HtmlResponse("detail2", struct{
+		Title string
+		Intro string
+		Desc string
 		Contents template.HTML
 		Subjects map[string]*core.TreeFolder
 		Menu template.HTML
 	}{
+		obj.Title,
+		obj.Intro,
+		obj.Desc,
 		template.HTML(string(output)) ,
 		core.SubjectIndexer,
 		template.HTML(Menu) ,

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Marked in the browser</title>
+    <title>{{.Title}} - Leo's fine</title>
     <link href="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
     <link href="/resources/styles/index.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/a11y-dark.css">
@@ -85,9 +85,9 @@
                                 <img class="media-object" alt="64x64" src="/resources/imgs/php.png" style="width: 64px; height: 64px;">
                             </div>
                             <div class="media-body">
-                                <h1 class="media-heading">this is title</h1>
+                                <h2 class="media-heading">{{.Title}}</h2>
                                 <small>write@2019-01-01</small>
-                                <p>this is some description</p>
+                                <p>{{.Intro}}</p>
                             </div>
                         </div>
                     </div>

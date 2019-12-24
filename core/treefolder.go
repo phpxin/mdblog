@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/phpxin/mdblog/conf"
+	model "github.com/phpxin/mdblog/models"
+	"github.com/phpxin/mdblog/tools/strutils"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type TreeFolderIntro struct {
@@ -19,9 +22,11 @@ type TreeFolderIntro struct {
 type TreeFolder struct {
 	Name string `json:"name"`
 	Path string `json:"path"`
+	PathHash string `json:"path_hash"`
 	Title string `json:"title"` // the title
 	Desc string `json:"desc"` // for SEO
 	Intro string `json:"intro"` // show on index path or article list
+	EditedAt int64 `json:"edited_at"`
 	Children []*TreeFolder `json:"children"`
 }
 
@@ -98,7 +103,8 @@ func generateTreeFolder(dirPath string) (*TreeFolder, error) {
 	}
 	treeFolder.Desc = treeFolderIntro.Desc
 	treeFolder.Intro = treeFolderIntro.Intro
-	treeFolder.Path = dirPath
+	treeFolder.Path = strings.Replace(dirPath, conf.ConfigInst.Docroot, "", 1)
+	treeFolder.PathHash = strutils.Md5(treeFolder.Path)
 
 	for _,fitem:=range finfos {
 		if fitem.IsDir() {
@@ -124,15 +130,34 @@ func generateTreeFolder(dirPath string) (*TreeFolder, error) {
 					theFile.Desc = fileIntro.Desc
 					theFile.Intro = fileIntro.Intro
 				}
-				theFile.Path = dirPath+"/"+fitem.Name()
+				theFile.Path = treeFolder.Path+"/"+fitem.Name()
+				theFile.PathHash = strutils.Md5(theFile.Path)
+				theFile.EditedAt = fitem.ModTime().Unix()
 				theFile.Children = nil
 
 				treeFolder.Children = append(treeFolder.Children, theFile)
-				DocsIndexer[theFile.Name] = theFile
+				DocsIndexer[theFile.PathHash] = theFile
+
+				// save to db
+				saveDocToDb(theFile, treeFolder)
 			}
 
 		}
 	}
 
 	return treeFolder,nil
+}
+
+func saveDocToDb(t *TreeFolder, p *TreeFolder) {
+	docModel := new(model.Doc)
+	docModel.Hash = t.PathHash
+	docModel.Path = t.Path
+	docModel.Title = t.Title
+	docModel.Desc = t.Desc
+	docModel.Intro = t.Intro
+	docModel.Parent = p.Name
+	docModel.ParentHash = p.PathHash
+	docModel.EditedAt = t.EditedAt
+
+	model.DocSaveOrRepl(docModel)
 }

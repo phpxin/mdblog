@@ -3,10 +3,12 @@ package controllers
 import (
 	"bytes"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/phpxin/mdblog/conf"
 	"github.com/phpxin/mdblog/core"
 	"gopkg.in/russross/blackfriday.v2"
 	"html/template"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"strings"
 )
@@ -35,13 +37,17 @@ func (ctrl *BlogController) Index(r *http.Request) (resp *core.HttpResponse) {
 		}
 	}
 
-	return core.HtmlResponse("subject", struct{
+	half := int(math.Ceil(float64(len(subjects))/2))
+
+	return core.HtmlResponse("subject3", struct{
 		Menu template.HTML
-		Subjects []*core.TreeFolder
+		Subjects1 []*core.TreeFolder
+		Subjects2 []*core.TreeFolder
 		Articles []*core.TreeFolder
 	}{
 		template.HTML(Menu) ,
-		subjects ,
+		subjects[:half] ,
+		subjects[half:] ,
 		articles,
 	})
 }
@@ -56,7 +62,7 @@ func (ctrl *BlogController) Detail2(r *http.Request) (resp *core.HttpResponse) {
 		return core.HtmlResponse("errors/404", nil)
 	}
 
-	contents,_ := ioutil.ReadFile(obj.Path)
+	contents,_ := ioutil.ReadFile(conf.ConfigInst.Docroot+"/"+obj.Path)
 	//render := blackfriday.NewHTMLRenderer(MarkdownToHtmlCommonHtmlFlags)
 	output := blackfriday.Run(contents)
 	//md := markdown.New(markdown.XHTMLOutput(true))
@@ -104,11 +110,15 @@ func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
 		return core.HtmlResponse("errors/404", nil)
 	}
 
-	contents,_ := ioutil.ReadFile(obj.Path)
+	contents,_ := ioutil.ReadFile(conf.ConfigInst.Docroot+"/"+obj.Path)
 	// blackfriday.
 	output := blackfriday.Run(contents)
 
-	return core.HtmlResponse("detail2", struct{
+	title:=obj.Title
+	title = strings.Replace(title, "-", " ", -1)
+	title = strings.Replace(title, ".md", "", -1)
+
+	return core.HtmlResponse("detail3", struct{
 		Title string
 		Intro string
 		Desc string
@@ -116,7 +126,7 @@ func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
 		Subjects map[string]*core.TreeFolder
 		Menu template.HTML
 	}{
-		obj.Title,
+		title,
 		obj.Intro,
 		obj.Desc,
 		template.HTML(string(output)) ,

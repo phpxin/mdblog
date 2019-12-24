@@ -13,6 +13,10 @@ var (
 
 type Config struct {
 	RpcHost string `json:"rpchost"`
+	Dbuser string `json:"dbuser"`
+	Dbpassword string `json:"dbpassword"`
+	Dbaddr string `json:"dbaddr"`
+	Dbname string `json:"dbname"`
 	Storagepath string `json:"storagepath"`
 	Resourcepath string `json:"resourcepath"`
 	Docroot string `json:"docroot"`

@@ -1,5 +1,10 @@
 package strutils
 
+import (
+	"crypto/md5"
+	"encoding/hex"
+)
+
 func UcFirst(str string) string {
 	if len(str) < 1 {
 		return ""
@@ -9,4 +14,9 @@ func UcFirst(str string) string {
 		strArry[0] += - 32
 	}
 	return string(strArry)
+}
+
+func Md5(str string) string {
+	result := md5.Sum([]byte(str))
+	return hex.EncodeToString(result[:])
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/phpxin/mdblog/conf"
 	"github.com/phpxin/mdblog/controllers"
 	"github.com/phpxin/mdblog/core"
+	model "github.com/phpxin/mdblog/models"
 	"github.com/phpxin/mdblog/tools/logger"
 	"os"
 )
@@ -26,6 +27,9 @@ func main() {
 
 	// 2. 初始化日志
 	logger.InitLogger(conf.ConfigInst.Storagepath+"/logs", "20060102")
+
+	// 模型初始化
+	model.InitModel()
 
 	// 初始化文档结构树
 	err = core.GenerateTreeFolder()

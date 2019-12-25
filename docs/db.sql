@@ -8,6 +8,7 @@ CREATE TABLE `docs` (
   `status` tinyint(1) DEFAULT '0' COMMENT '0 正常，1 禁用',
   `parent` varchar(20) DEFAULT '' COMMENT '文件夹，标签',
   `parent_hash` char(32) DEFAULT '' COMMENT '文件夹，标签',
+  `img` varchar(200) DEFAULT '' COMMENT '配图',
   `created_at` int(11) DEFAULT NULL COMMENT '创建时间',
   `updated_at` int(11) DEFAULT NULL COMMENT '更新时间',
   `edited_at` int(11) DEFAULT NULL COMMENT '编辑时间',

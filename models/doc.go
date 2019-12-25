@@ -1,13 +1,16 @@
 package model
 
 import (
-	"github.com/phpxin/mdblog/tools/log"
 	"time"
 )
 
 const (
 	DOC_STATUS_NORMAL = 0
 	DOC_STATUS_DISABLED = 1
+)
+
+var (
+	defaultImgs = []string{"/resources/imgs/default1.png","/resources/imgs/default2.png","/resources/imgs/default.jpg"}
 )
 
 // 解析结果
@@ -22,6 +25,7 @@ type Doc struct {
 	Status int32
 	Parent string
 	ParentHash string
+	Img string
 	CreatedAt int64
 	UpdatedAt int64
 	EditedAt int64
@@ -32,19 +36,19 @@ func DocSaveOrRepl(doc *Doc) bool {
 	db.Where("hash=?", doc.Hash).First(result)
 	now := time.Now().Unix()
 	if result.Id>0 {
-		if result.EditedAt<doc.EditedAt {
-			result.Path = doc.Path
-			result.Title = doc.Title
-			result.Desc = doc.Desc
-			result.Intro = doc.Intro
-			result.UpdatedAt = now
-			result.EditedAt = doc.EditedAt
-			db.Save(result)
+		//if result.EditedAt<doc.EditedAt {
+		//
+		//
+		//	log.Debug("", "edited %s", doc.Path)
+		//}
 
-			log.Debug("", "edited %s", doc.Path)
-		}
-
-
+		result.Path = doc.Path
+		result.Title = doc.Title
+		result.Desc = doc.Desc
+		result.Intro = doc.Intro
+		result.UpdatedAt = now
+		result.EditedAt = doc.EditedAt
+		db.Save(result)
 	}else{
 		result.CreatedAt = now
 		result.Status = DOC_STATUS_NORMAL
@@ -65,5 +69,14 @@ func GetDocsByPage(page int32, limit int32) ([]*Doc, int32) {
 	}
 	start := (page-1)*limit
 	db.Where("status=?", DOC_STATUS_NORMAL).Order("id desc").Offset(start).Limit(limit).Find(&results)
+
+	if len(results)>0 {
+		for _,v := range results {
+			if v.Img=="" {
+				v.Img = defaultImgs[v.Id%3]
+			}
+		}
+	}
+
 	return results, counter
 }

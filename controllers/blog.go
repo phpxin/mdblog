@@ -29,6 +29,8 @@ func (ctrl *BlogController) Index(r *http.Request) (resp *core.HttpResponse) {
 	subjects := make([]*core.TreeFolder, 0)
 	articles := make([]*core.TreeFolder, 0)
 
+	// todo fetch articles from db
+
 	for _,item := range obj.Children {
 		if len(item.Children)>0 {
 			subjects = append(subjects, item)

@@ -61,21 +61,35 @@
         </h1>
 
         {{range $k2,$v2 := .List}}
-          <!-- Blog Post -->
-          <div class="card mb-4">
-{{/*            <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">*/}}
-{{/*            <img class="card-img-top" src="/resources/imgs/bg.jpg" alt="Card image cap">*/}}
-            <div class="card-body">
-              <h2 class="card-title">{{$v2.Title}}</h2>
-              <p class="card-text">{{$v2.Intro}}</p>
-              <a href="/blog/detail?md={{$v2.Hash}}" class="btn btn-primary">Read More &rarr;</a>
-            </div>
-            <div class="card-footer text-muted">
-              Posted on January 1, 2017 by
-              <a href="#">Start Bootstrap</a>
-            </div>
+        <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+          <div class="col p-4 d-flex flex-column position-static">
+            <strong class="d-inline-block mb-2 text-primary">World</strong>
+            <h3 class="mb-0">{{$v2.Title}}</h3>
+            <div class="mb-1 text-muted">Nov 12</div>
+            <p class="card-text mb-auto">{{$v2.Intro}}</p>
+            <a href="/blog/detail?md={{$v2.Hash}}" class="stretched-link">Continue reading</a>
           </div>
+          <div class="col-auto d-none d-lg-block">
+            <img width="200" height="200" src="{{$v2.Img}}">
+          </div>
+        </div>
         {{end}}
+
+{{/*        {{range $k2,$v2 := .List}}*/}}
+{{/*          <!-- Blog Post -->*/}}
+{{/*          <div class="card mb-4">*/}}
+{{/*            <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">*/}}
+{{/*            <div class="card-body">*/}}
+{{/*              <h2 class="card-title">{{$v2.Title}}</h2>*/}}
+{{/*              <p class="card-text">{{$v2.Intro}}</p>*/}}
+{{/*              <a href="/blog/detail?md={{$v2.Hash}}" class="btn btn-primary">Read More &rarr;</a>*/}}
+{{/*            </div>*/}}
+{{/*            <div class="card-footer text-muted">*/}}
+{{/*              Posted on January 1, 2017 by*/}}
+{{/*              <a href="#">Start Bootstrap</a>*/}}
+{{/*            </div>*/}}
+{{/*          </div>*/}}
+{{/*        {{end}}*/}}
 
         <!-- Pagination -->
         <ul class="pagination justify-content-center mb-4">

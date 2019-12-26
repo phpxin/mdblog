@@ -31,6 +31,14 @@ type Doc struct {
 	EditedAt int64
 }
 
+type HotDoc struct {
+	Id int64
+	Hash string
+	Title string
+	Img string
+	Counter int32
+}
+
 func DocSaveOrRepl(doc *Doc) bool {
 	var result = new(Doc)
 	db.Where("hash=?", doc.Hash).First(result)
@@ -56,6 +64,62 @@ func DocSaveOrRepl(doc *Doc) bool {
 	}
 
 	return true
+}
+
+func GetHotRanging() []*HotDoc {
+	results := make([]*HotDoc, 0)
+	sql := "select d.id,d.hash,d.title,d.img,c.counter from docs as d left join click as c on c.hash=d.hash where d.status=? order by c.counter desc,d.id desc limit 10"
+	db.Raw(sql, DOC_STATUS_NORMAL).Scan(&results)
+
+	if len(results)>0 {
+		for _,v := range results {
+			if v.Img=="" {
+				v.Img = defaultImgs[v.Id%3]
+			}
+		}
+	}
+
+	return results
+}
+
+func GetDoc(hash string) (*Doc,bool) {
+	doc := new(Doc)
+	db.Where("hash=?", hash).First(doc)
+
+	ok := false
+	if doc.Id>0 {
+		ok = true
+
+		if doc.Img=="" {
+			doc.Img = defaultImgs[doc.Id%3]
+		}
+	}
+
+
+	return doc,ok
+}
+
+func GetDocsBySubject(subject string ,page int32, limit int32) ([]*Doc, int32) {
+	results := make([]*Doc, 0)
+
+	var counter int32 = 0
+	db.Where("status=? and parent_hash=?", DOC_STATUS_NORMAL, subject).Table("docs").Count(&counter)
+
+	if page<=0 {
+		page=1
+	}
+	start := (page-1)*limit
+	db.Where("status=? and parent_hash=?", DOC_STATUS_NORMAL, subject).Order("id desc").Offset(start).Limit(limit).Find(&results)
+
+	if len(results)>0 {
+		for _,v := range results {
+			if v.Img=="" {
+				v.Img = defaultImgs[v.Id%3]
+			}
+		}
+	}
+
+	return results, counter
 }
 
 func GetDocsByPage(page int32, limit int32) ([]*Doc, int32) {

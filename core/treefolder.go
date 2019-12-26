@@ -114,7 +114,7 @@ func generateTreeFolder(dirPath string) (*TreeFolder, error) {
 			}
 
 			treeFolder.Children = append(treeFolder.Children, cTreeFolder)
-			SubjectIndexer[cTreeFolder.Name] = cTreeFolder
+			SubjectIndexer[cTreeFolder.PathHash] = cTreeFolder
 
 		}else{
 			if filepath.Ext(fitem.Name())==".md" {

@@ -5,7 +5,6 @@ import (
 	model "github.com/phpxin/mdblog/models"
 	"github.com/phpxin/mdblog/tools/log"
 	"html/template"
-	"math"
 	"net/http"
 	"strconv"
 )
@@ -48,25 +47,29 @@ func (ctrl *IndexController) Index(r *http.Request) (resp *core.HttpResponse) {
 	}
 
 	subjects := make([]*core.TreeFolder, 0)
-
 	for _,v := range core.SubjectIndexer {
 
 		subjects = append(subjects, v)
 	}
-	half := int(math.Ceil(float64(len(subjects))/2))
+
+	hot := model.GetHotRanging()
+
+	sidebar := sidebar(subjects, hot)
+	nav := nav()
+	footer := footer()
 
 	return core.HtmlResponse("index3", struct{
 		List []*model.Doc
-		Subjects1 []*core.TreeFolder
-		Subjects2 []*core.TreeFolder
-		Menu template.HTML
+		Sidebar template.HTML
+		Nav template.HTML
+		Footer template.HTML
 		PrevPage int
 		NextPage int
 	}{
 		docs ,
-		subjects[:half],
-		subjects[half:],
-		template.HTML(Menu) ,
+		template.HTML(sidebar) ,
+		template.HTML(nav) ,
+		template.HTML(footer) ,
 		prevPage,
 		nextPage,
 	})

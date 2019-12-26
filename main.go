@@ -38,7 +38,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	controllers.InitController()
+	//controllers.InitController()
 
 	// 3. 加载路由
 	core.Router(&controllers.BlogController{})

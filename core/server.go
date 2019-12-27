@@ -32,10 +32,7 @@ type ApiRet struct {
 	Msg  string                 `json:"msg"`
 }
 
-type HttpContext struct {
-	RawReq *http.Request
-	SessionId string
-}
+
 
 func InitServer() {
 	http.HandleFunc("/", RpcHandle)

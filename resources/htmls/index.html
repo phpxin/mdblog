@@ -32,9 +32,17 @@
       <!-- Blog Entries Column -->
       <div class="col-md-8">
 
-        <h1 class="my-4">Leo's Blog
-          <small>Knowledge worth share</small>
-        </h1>
+        {{if eq "" .Keywords}}
+          <h1 class="my-4">Leo's Blog
+            <small>Knowledge worth share</small>
+          </h1>
+        {{else}}
+          <h1 class="my-4">搜索
+            <small>{{.Keywords}}</small>
+          </h1>
+        {{end}}
+
+
 
         {{range $k2,$v2 := .List}}
         <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
@@ -70,10 +78,10 @@
         <!-- Pagination -->
         <ul class="pagination justify-content-center mb-4">
           <li class="page-item {{if lt .PrevPage 0}}disabled{{end}}">
-            <a class="page-link" href="?p={{$.PrevPage}}">&larr; Older</a>
+            <a class="page-link" href="?keywords={{$.Keywords}}&p={{$.PrevPage}}">&larr; Older</a>
           </li>
           <li class="page-item {{if lt .NextPage 0}}disabled{{end}}">
-            <a class="page-link" href="?p={{$.NextPage}}">Newer &rarr;</a>
+            <a class="page-link" href="?keywords={{$.Keywords}}&p={{$.NextPage}}">Newer &rarr;</a>
           </li>
         </ul>
 
@@ -98,6 +106,7 @@
   <!-- Bootstrap core JavaScript -->
   <script src="/resources/vendor/jquery/jquery.min.js"></script>
   <script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/resources/scripts/common.js"></script>
 
 </body>
 

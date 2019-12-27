@@ -4,12 +4,10 @@ import (
 	"github.com/phpxin/mdblog/conf"
 	"github.com/phpxin/mdblog/core"
 	model "github.com/phpxin/mdblog/models"
-	"github.com/phpxin/mdblog/tools/log"
 	"github.com/phpxin/mdblog/tools/strutils"
 	"gopkg.in/russross/blackfriday.v2"
 	"html/template"
 	"io/ioutil"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -19,26 +17,22 @@ type BlogController struct {
 }
 
 func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpResponse) {
-	r:=ctx.RawReq
-	qStr := r.URL.Query()
-	subject := qStr.Get("subject")
+
+	subject,_ := ctx.GetString("subject", "")
 
 	obj,ok := core.SubjectIndexer[subject]
 	if !ok {
 		return core.HtmlResponse("errors/404", nil)
 	}
 
-	page := qStr.Get("p")
-	pagen,err := strconv.Atoi(page)
+	pagen,err := ctx.GetInt32("p", 1)
 	if err!=nil {
-		log.Error("get page failed %s", err.Error())
 		pagen = 1
 	}
 
 	var limit int32 = 5
 
 	subjects := make(map[string]*core.TreeFolder)
-	//articles := make([]*core.TreeFolder, 0)
 
 	for _,item := range obj.Children {
 		if len(item.Children)>0 {
@@ -48,14 +42,15 @@ func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpRespons
 		}
 	}
 
-	articles,amount := model.GetDocsBySubject(subject,int32(pagen), limit)
-	prevPage := -1
-	nextPage := -1
+	articles,amount := model.GetDocsBySubject(subject, pagen, limit)
+
+	var prevPage int32 = -1
+	var nextPage int32 = -1
 
 	if pagen>1 {
 		prevPage = pagen-1
 	}
-	if int32(pagen)*limit < amount {
+	if pagen*limit < amount {
 		nextPage = pagen+1
 	}
 
@@ -72,8 +67,8 @@ func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpRespons
 		Articles []*model.Doc
 		SubjectHash string
 		Title string
-		PrevPage int
-		NextPage int
+		PrevPage int32
+		NextPage int32
 	}{
 		template.HTML(sidebar) ,
 		template.HTML(nav) ,
@@ -87,10 +82,9 @@ func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpRespons
 }
 
 func (ctrl *BlogController) Detail(ctx *core.HttpContext) (resp *core.HttpResponse) {
-	r:=ctx.RawReq
-	// @todo 全局参数获取、过滤、格式化、校验插件
-	qStr := r.URL.Query()
-	mdname := qStr.Get("md")
+
+
+	mdname,_ := ctx.GetString("md", "")
 
 	obj,ok := model.GetDoc(mdname)
 	if !ok {

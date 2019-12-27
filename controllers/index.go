@@ -3,9 +3,7 @@ package controllers
 import (
 	"github.com/phpxin/mdblog/core"
 	model "github.com/phpxin/mdblog/models"
-	"github.com/phpxin/mdblog/tools/log"
 	"html/template"
-	"strconv"
 )
 type IndexController struct {
 
@@ -13,43 +11,32 @@ type IndexController struct {
 
 //https://startbootstrap.com/templates/blog-home/
 func (ctrl *IndexController) Index(ctx *core.HttpContext) (resp *core.HttpResponse) {
-	r:=ctx.RawReq
-	//return core.HtmlResponse("index2", struct{
-	//	List map[string]*core.TreeFolder
-	//	Subjects map[string]*core.TreeFolder
-	//	Menu template.HTML
-	//}{
-	//	core.DocsIndexer ,
-	//	core.SubjectIndexer,
-	//	template.HTML(Menu) ,
-	//})
-
-	qStr := r.URL.Query()
-	page := qStr.Get("p")
-	pagen,err := strconv.Atoi(page)
+	keywords,_ := ctx.GetString("keywords", "")
+	pagen,err := ctx.GetInt32("p", 1)
 	if err!=nil {
-		log.Error("get page failed %s", err.Error())
 		pagen = 1
 	}
 
 	var limit int32 = 5
 
-	docs,amount := model.GetDocsByPage(int32(pagen), limit)
-	prevPage := -1
-	nextPage := -1
+	var docs []*model.Doc
+	var amount int32
+
+	if keywords!="" {
+		docs,amount = model.SearchDocs(keywords, pagen, limit)
+	}else{
+		docs,amount = model.GetDocsByPage(pagen, limit)
+	}
+
+	var prevPage int32 = -1
+	var nextPage int32 = -1
 
 	if pagen>1 {
 		prevPage = pagen-1
 	}
-	if int32(pagen)*limit < amount {
+	if pagen*limit < amount {
 		nextPage = pagen+1
 	}
-
-	//subjects := make([]*core.TreeFolder, 0)
-	//for _,v := range core.SubjectIndexer {
-	//
-	//	subjects = append(subjects, v)
-	//}
 
 	hot := model.GetHotRanging()
 
@@ -62,8 +49,9 @@ func (ctrl *IndexController) Index(ctx *core.HttpContext) (resp *core.HttpRespon
 		Sidebar template.HTML
 		Nav template.HTML
 		Footer template.HTML
-		PrevPage int
-		NextPage int
+		PrevPage int32
+		NextPage int32
+		Keywords string
 	}{
 		docs ,
 		template.HTML(sidebar) ,
@@ -71,6 +59,7 @@ func (ctrl *IndexController) Index(ctx *core.HttpContext) (resp *core.HttpRespon
 		template.HTML(footer) ,
 		prevPage,
 		nextPage,
+		keywords,
 	})
 }
 

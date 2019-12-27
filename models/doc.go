@@ -103,6 +103,29 @@ func GetDoc(hash string) (*Doc,bool) {
 	return doc,ok
 }
 
+func SearchDocs(keywords string, page int32, limit int32) ([]*Doc, int32) {
+	results := make([]*Doc, 0)
+
+	var counter int32 = 0
+	db.Where("title like ? and status=?", "%"+keywords+"%", DOC_STATUS_NORMAL).Table("docs").Count(&counter)
+
+	if page<=0 {
+		page=1
+	}
+	start := (page-1)*limit
+	db.Where("title like ? and status=?", "%"+keywords+"%", DOC_STATUS_NORMAL).Order("id desc").Offset(start).Limit(limit).Find(&results)
+
+	if len(results)>0 {
+		for _,v := range results {
+			if v.Img=="" {
+				v.Img = defaultImgs[v.Id%3]
+			}
+		}
+	}
+
+	return results, counter
+}
+
 func GetDocsBySubject(subject string ,page int32, limit int32) ([]*Doc, int32) {
 	results := make([]*Doc, 0)
 

@@ -3,10 +3,34 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "1swJfQpdxz+f7S4vKw8RbJ/donI=",
+			"path": "github.com/go-sql-driver/mysql",
+			"revision": "b66d043e6c8986ca01241b990326db395f9c0afd",
+			"revisionTime": "2019-12-12T00:19:55Z"
+		},
+		{
+			"checksumSHA1": "P86sNm3HVOHNqwoPXePlZ5/mZG0=",
+			"path": "github.com/hashicorp/go-uuid",
+			"revision": "f32f5fe8d6a86bfd2a4f58998002f7b0b91cf78f",
+			"revisionTime": "2019-10-01T23:12:23Z"
+		},
+		{
 			"checksumSHA1": "tM7T53nadX4YqpWXYtZV85hGnGI=",
 			"path": "github.com/jinzhu/gorm",
 			"revision": "59408390c2dce9ca8b48fae08937213e72b24f9a",
 			"revisionTime": "2019-11-19T08:08:00Z"
+		},
+		{
+			"checksumSHA1": "eECxSkwh0WmhLwaxHfkvcLOWS08=",
+			"path": "github.com/jinzhu/gorm/dialects/mysql",
+			"revision": "59408390c2dce9ca8b48fae08937213e72b24f9a",
+			"revisionTime": "2019-11-19T08:08:00Z"
+		},
+		{
+			"checksumSHA1": "iqeSAF7imnVsW+iqLqf6kkYn1VU=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "f5c5f50e6090ae76a29240b61ae2a90dd810112e",
+			"revisionTime": "2019-06-03T04:28:36Z"
 		},
 		{
 			"checksumSHA1": "IGPrksV2kzWSKV1wgQq7ze+pCE0=",

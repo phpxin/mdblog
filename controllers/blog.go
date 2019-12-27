@@ -5,10 +5,10 @@ import (
 	"github.com/phpxin/mdblog/core"
 	model "github.com/phpxin/mdblog/models"
 	"github.com/phpxin/mdblog/tools/log"
+	"github.com/phpxin/mdblog/tools/strutils"
 	"gopkg.in/russross/blackfriday.v2"
 	"html/template"
 	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -18,7 +18,8 @@ type BlogController struct {
 
 }
 
-func (ctrl *BlogController) Index(r *http.Request) (resp *core.HttpResponse) {
+func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpResponse) {
+	r:=ctx.RawReq
 	qStr := r.URL.Query()
 	subject := qStr.Get("subject")
 
@@ -36,12 +37,12 @@ func (ctrl *BlogController) Index(r *http.Request) (resp *core.HttpResponse) {
 
 	var limit int32 = 5
 
-	subjects := make([]*core.TreeFolder, 0)
+	subjects := make(map[string]*core.TreeFolder)
 	//articles := make([]*core.TreeFolder, 0)
 
 	for _,item := range obj.Children {
 		if len(item.Children)>0 {
-			subjects = append(subjects, item)
+			subjects[item.PathHash] = item
 		}else{
 			//articles = append(articles, item)
 		}
@@ -64,7 +65,7 @@ func (ctrl *BlogController) Index(r *http.Request) (resp *core.HttpResponse) {
 	nav := nav()
 	footer := footer()
 
-	return core.HtmlResponse("subject3", struct{
+	return core.HtmlResponse("subject", struct{
 		Sidebar template.HTML
 		Nav template.HTML
 		Footer template.HTML
@@ -85,7 +86,8 @@ func (ctrl *BlogController) Index(r *http.Request) (resp *core.HttpResponse) {
 	})
 }
 
-func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
+func (ctrl *BlogController) Detail(ctx *core.HttpContext) (resp *core.HttpResponse) {
+	r:=ctx.RawReq
 	// @todo 全局参数获取、过滤、格式化、校验插件
 	qStr := r.URL.Query()
 	mdname := qStr.Get("md")
@@ -102,15 +104,15 @@ func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
 	title = strings.Replace(title, "-", " ", -1)
 	title = strings.Replace(title, ".md", "", -1)
 
-	subjects := make([]*core.TreeFolder, 0)
-	for _,v := range core.SubjectIndexer {
-
-		subjects = append(subjects, v)
-	}
+	//subjects := make([]*core.TreeFolder, 0)
+	//for _,v := range core.SubjectIndexer {
+	//
+	//	subjects = append(subjects, v)
+	//}
 
 	hot := model.GetHotRanging()
 
-	sidebar := sidebar(subjects, hot)
+	sidebar := sidebar(core.SubjectIndexer, hot)
 	nav := nav()
 	footer := footer()
 
@@ -147,7 +149,9 @@ func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
 	//	}
 	//}
 
-	return core.HtmlResponse("detail3", struct{
+	clickCount:=recordArticleLog(ctx, obj)
+
+	return core.HtmlResponse("detail", struct{
 		Title string
 		Intro string
 		Desc string
@@ -157,6 +161,7 @@ func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
 		Sidebar template.HTML
 		Nav template.HTML
 		Footer template.HTML
+		ClickCount int64
 	}{
 		title,
 		obj.Intro,
@@ -167,5 +172,31 @@ func (ctrl *BlogController) Detail(r *http.Request) (resp *core.HttpResponse) {
 		template.HTML(sidebar) ,
 		template.HTML(nav) ,
 		template.HTML(footer) ,
+		clickCount,
 	})
+}
+
+//记录浏览
+func recordArticleLog(ctx *core.HttpContext,doc *model.Doc) int64 {
+	id := doc.Id
+
+	sessid := ctx.SessionId
+	now := time.Now().Unix()
+	ua := ctx.RawReq.UserAgent()
+
+	artlog,ok := model.GetArtlog(sessid, id)
+	if ok && artlog.CreatedAt+(60*5)>now {
+		return model.GetClickCount(doc.Hash) //同一IP地址、同一浏览器、同一文章距离上次浏览不足5分钟,不统计
+	}
+
+	artlog = new(model.Artlog)
+	artlog.Ip = strutils.ClientIP(ctx.RawReq)
+	artlog.Sessid = sessid
+	artlog.Articleid = id
+	artlog.Useragent = ua
+
+	model.SaveArtlog(artlog)
+
+	//更新文章冗余
+	return model.ClickIncr(doc.Hash)
 }

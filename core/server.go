@@ -32,6 +32,11 @@ type ApiRet struct {
 	Msg  string                 `json:"msg"`
 }
 
+type HttpContext struct {
+	RawReq *http.Request
+	SessionId string
+}
+
 func InitServer() {
 	http.HandleFunc("/", RpcHandle)
 	err := http.ListenAndServe(conf.ConfigInst.RpcHost,nil)
@@ -77,6 +82,10 @@ func RpcHandle(w http.ResponseWriter, r *http.Request){
 	}
 
 	// @TODO BeforeRouter 这里可以做参数校验、权限验证等中间件操作
+	ctx := new(HttpContext)
+	ctx.RawReq = r
+	SessionInit(ctx, w)
+
 	startTime := time.Now().Nanosecond()
 	moduleStr := "index"
 	action := "index" // 默认方法是 IndexController.Index 方法
@@ -103,7 +112,7 @@ func RpcHandle(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	rets := method.Call([]reflect.Value{reflect.ValueOf(r)})
+	rets := method.Call([]reflect.Value{reflect.ValueOf(ctx)})
 	hRes := rets[0].Interface().(*HttpResponse)
 
 	// @TODO AfterRouter 这里可以记录程序请求日志、统计程序时长等中间件操作

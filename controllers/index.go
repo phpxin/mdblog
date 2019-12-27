@@ -5,7 +5,6 @@ import (
 	model "github.com/phpxin/mdblog/models"
 	"github.com/phpxin/mdblog/tools/log"
 	"html/template"
-	"net/http"
 	"strconv"
 )
 type IndexController struct {
@@ -13,8 +12,8 @@ type IndexController struct {
 }
 
 //https://startbootstrap.com/templates/blog-home/
-func (ctrl *IndexController) Index(r *http.Request) (resp *core.HttpResponse) {
-
+func (ctrl *IndexController) Index(ctx *core.HttpContext) (resp *core.HttpResponse) {
+	r:=ctx.RawReq
 	//return core.HtmlResponse("index2", struct{
 	//	List map[string]*core.TreeFolder
 	//	Subjects map[string]*core.TreeFolder
@@ -46,19 +45,19 @@ func (ctrl *IndexController) Index(r *http.Request) (resp *core.HttpResponse) {
 		nextPage = pagen+1
 	}
 
-	subjects := make([]*core.TreeFolder, 0)
-	for _,v := range core.SubjectIndexer {
-
-		subjects = append(subjects, v)
-	}
+	//subjects := make([]*core.TreeFolder, 0)
+	//for _,v := range core.SubjectIndexer {
+	//
+	//	subjects = append(subjects, v)
+	//}
 
 	hot := model.GetHotRanging()
 
-	sidebar := sidebar(subjects, hot)
+	sidebar := sidebar(core.SubjectIndexer, hot)
 	nav := nav()
 	footer := footer()
 
-	return core.HtmlResponse("index3", struct{
+	return core.HtmlResponse("index", struct{
 		List []*model.Doc
 		Sidebar template.HTML
 		Nav template.HTML
@@ -75,15 +74,11 @@ func (ctrl *IndexController) Index(r *http.Request) (resp *core.HttpResponse) {
 	})
 }
 
-func (ctrl *IndexController) Regenerate(r *http.Request) (resp *core.HttpResponse) {
-
+func (ctrl *IndexController) Regenerate(ctx *core.HttpContext) (resp *core.HttpResponse) {
 	err := core.GenerateTreeFolder()
 	if err!=nil {
 		return core.ApiError(core.API_ERR_MSG, err.Error())
 	}
-	Menu = menuHtml(core.GetTreeFolder())
-
-	// @todo sync to database
 
 	return core.ApiSuccess(map[string]interface{}{
 		"msg":"generate success",

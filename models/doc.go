@@ -39,6 +39,10 @@ type HotDoc struct {
 	Counter int32
 }
 
+func (doc *Doc) Update() {
+	db.Save(doc)
+}
+
 func DocSaveOrRepl(doc *Doc) bool {
 	var result = new(Doc)
 	db.Where("hash=?", doc.Hash).First(result)
@@ -68,7 +72,7 @@ func DocSaveOrRepl(doc *Doc) bool {
 
 func GetHotRanging() []*HotDoc {
 	results := make([]*HotDoc, 0)
-	sql := "select d.id,d.hash,d.title,d.img,c.counter from docs as d left join click as c on c.hash=d.hash where d.status=? order by c.counter desc,d.id desc limit 10"
+	sql := "select d.id,d.hash,d.title,d.img,c.counter from docs as d left join clicks as c on c.hash=d.hash where d.status=? order by c.counter desc,d.id desc limit 10"
 	db.Raw(sql, DOC_STATUS_NORMAL).Scan(&results)
 
 	if len(results)>0 {

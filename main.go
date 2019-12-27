@@ -38,11 +38,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	//controllers.InitController()
-
 	// 3. 加载路由
 	core.Router(&controllers.BlogController{})
 	core.Router(&controllers.IndexController{})
+	core.Router(&controllers.TestController{})
 
 	// 4. 初始化 WEB 服务
 	core.InitServer()

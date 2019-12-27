@@ -15,7 +15,7 @@ CREATE TABLE `docs` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 ;
 
-CREATE TABLE `click` (
+CREATE TABLE `clicks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `hash` char(32) DEFAULT NULL COMMENT '文档绝对路径哈希值',
   `counter` int(11) DEFAULT NULL COMMENT '访问绝对路径',
@@ -23,3 +23,13 @@ CREATE TABLE `click` (
   `updated_at` int(11) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ;
+
+CREATE TABLE `artlogs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(200) NOT NULL COMMENT '客户端ip地址',
+  `articleid` int(11) NOT NULL COMMENT '文章id',
+  `sessid` varchar(200) NOT NULL COMMENT 'PHP session id',
+  `created_at` int(11) NOT NULL COMMENT '添加时间',
+  `useragent` text COMMENT '浏览器信息',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='文章浏览记录表';

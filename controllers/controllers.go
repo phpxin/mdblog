@@ -8,15 +8,8 @@ import (
 	"github.com/phpxin/mdblog/tools/log"
 	"html/template"
 	"math"
+	"sort"
 )
-
-var (
-	Menu string
-)
-
-func InitController() {
-	//Menu = menuHtml(core.GetTreeFolder())
-}
 
 func footer() string {
 	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath+"/htmls/footer.html")
@@ -46,7 +39,22 @@ func nav() string {
 	return wbf.String()
 }
 
-func sidebar(subjects []*core.TreeFolder, hotArticles []*model.HotDoc) string {
+func sidebar(submap map[string]*core.TreeFolder, hotArticles []*model.HotDoc) string {
+
+	subjects := make([]*core.TreeFolder, 0)
+	sublen:=len(submap)
+	subKeys := make([]string, sublen)
+	i:=0
+	for k,_ := range submap {
+		subKeys[i] = k
+		i++
+	}
+
+	sort.Strings(subKeys)
+
+	for _,k := range subKeys {
+		subjects = append(subjects, submap[k])
+	}
 
 	half := int(math.Ceil(float64(len(subjects))/2))
 
@@ -69,72 +77,4 @@ func sidebar(subjects []*core.TreeFolder, hotArticles []*model.HotDoc) string {
 	}
 
 	return wbf.String()
-}
-
-func menuHtml(tf *core.TreeFolder) string {
-	subMenus := make([]*core.TreeFolder, 0)
-	if len(tf.Children)>0 {
-		for _,v := range tf.Children {
-			if len(v.Children)>0 {
-				subMenus = append(subMenus, v)
-			}
-		}
-	}
-
-	if len(subMenus)>0 {
-		html := "<ul class=\"nav navbar-nav\">"
-		for _,secMenuItem := range subMenus {
-			html += secMenuHtml(secMenuItem)
-		}
-		html += "</ul>"
-		return html
-	}
-
-	return ""
-}
-
-func secMenuHtml(tf *core.TreeFolder) string {
-	subMenus := make([]*core.TreeFolder, 0)
-	if len(tf.Children)>0 {
-		for _,v := range tf.Children {
-			if len(v.Children)>0 {
-				subMenus = append(subMenus, v)
-			}
-		}
-	}
-
-	if len(subMenus)>0 {
-		html := "<li class=\"dropdown\"><a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-target=\"dropdownMenu1\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">"+tf.Title+" <span class=\"caret\"></span></a><ul class=\"dropdown-menu multi-level\" role=\"menu\" aria-labelledby=\"dropdownMenu\">"
-		html += "<li><a href=\"/blog?subject="+tf.Name+"\"> -&gt; "+tf.Title+"</a></li>"
-		for _,thirdMenuItem := range subMenus {
-			html += thirdMenuHtml(thirdMenuItem)
-		}
-		html += "</ul></li>"
-		return html
-	}else{
-		return "<li><a href=\"/blog?subject="+tf.Name+"\">"+tf.Title+"</a></li>"
-	}
-}
-
-func thirdMenuHtml(tf *core.TreeFolder) string {
-	subMenus := make([]*core.TreeFolder, 0)
-	if len(tf.Children)>0 {
-		for _,v := range tf.Children {
-			if len(v.Children)>0 {
-				subMenus = append(subMenus, v)
-			}
-		}
-	}
-
-	if len(subMenus)>0 {
-		html := "<li class=\"dropdown-submenu\"><a tabindex=\"-1\" href=\"javascript:void();\">"+tf.Title+"</a><ul class=\"dropdown-menu\">"
-		html += "<li><a href=\"/blog?subject="+tf.Name+"\"> -&gt; "+tf.Title+"</a></li>"
-		for _,thirdMenuItem := range subMenus {
-			html += thirdMenuHtml(thirdMenuItem)
-		}
-		html += "</ul></li>"
-		return html
-	}else{
-		return "<li><a href=\"/blog?subject="+tf.Name+"\">"+tf.Title+"</a></li>"
-	}
 }

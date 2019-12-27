@@ -1,24 +1,155 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <title>Marked in the browser</title>
-    <!---<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css">-->
-    <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/a11y-dark.css">
-    <link rel="stylesheet" href="/resources/styles/detail.css">
-</head>
-<body>
-<div id="header"> This is the Website </div>
-<div id="main">
-    <div id="m-left">sidebar</div>
-    <div id="content">{{.Contents}}</div>
-    <div class="clean"></div>
-</div>
-<div id="footer">
+<!DOCTYPE html>
+<html lang="en">
 
-    Thanks for reading! <img src="/resources/imgs/bg.jpg" width="200" />
-</div>
-<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
-<script src="/resources/scripts/detail.js"></script>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>{{.Title}} - Leo's Blog</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/resources/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="/resources/css/blog-post.css" rel="stylesheet">
+  <link href="/resources/css/default.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/a11y-dark.css">
+
+  <style>
+    #contents code{
+      font-family: "Courier New", serif;
+    }
+    #contents code{
+      font-size: 14px;
+    }
+    #contents img{
+      max-width: 80%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  {{.Nav}}
+
+  <!-- Page Content -->
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Post Content Column -->
+      <div class="col-lg-8">
+
+        <!-- Title -->
+        <h1 class="mt-4">{{.Title}}</h1>
+
+        <!-- Author -->
+        <p class="lead">
+          创作人
+          <a href="#">Leo</a> {{/* link to about me page*/}}
+        </p>
+
+        <hr>
+
+        <!-- Date/Time -->
+        <p>编辑时间 {{.EditedAt}}</p>
+
+        <hr>
+
+        <!-- Preview Image -->
+{{/*        <img class="img-fluid rounded" src="http://placehold.it/900x300" alt="">*/}}
+        {{if ne .Img ""}}
+          <img class="img-fluid rounded" src="data:image/jpeg;base64,{{.Img}}" alt="">
+          <hr>
+        {{end}}
+
+
+
+
+        <!-- Post Content -->
+        <div id="contents">
+          {{.Contents}}
+        </div>
+
+        <hr>
+        阅读：{{.ClickCount}}
+        <hr>
+
+        <!-- Comments Form -->
+        <div class="card my-4">
+          <h5 class="card-header">留言:</h5>
+          <div class="card-body">
+            <form>
+              <div class="form-group">
+                <textarea class="form-control" rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">提交</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Single Comment -->
+{{/*        <div class="media mb-4">*/}}
+{{/*          <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">*/}}
+{{/*          <div class="media-body">*/}}
+{{/*            <h5 class="mt-0">Commenter Name</h5>*/}}
+{{/*            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.*/}}
+{{/*          </div>*/}}
+{{/*        </div>*/}}
+
+        <!-- Comment with nested comments -->
+{{/*        <div class="media mb-4">*/}}
+{{/*          <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">*/}}
+{{/*          <div class="media-body">*/}}
+{{/*            <h5 class="mt-0">Commenter Name</h5>*/}}
+{{/*            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.*/}}
+
+{{/*            <div class="media mt-4">*/}}
+{{/*              <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">*/}}
+{{/*              <div class="media-body">*/}}
+{{/*                <h5 class="mt-0">Commenter Name</h5>*/}}
+{{/*                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.*/}}
+{{/*              </div>*/}}
+{{/*            </div>*/}}
+
+{{/*            <div class="media mt-4">*/}}
+{{/*              <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">*/}}
+{{/*              <div class="media-body">*/}}
+{{/*                <h5 class="mt-0">Commenter Name</h5>*/}}
+{{/*                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.*/}}
+{{/*              </div>*/}}
+{{/*            </div>*/}}
+
+{{/*          </div>*/}}
+{{/*        </div>*/}}
+
+      </div>
+
+      <!-- Sidebar Widgets Column -->
+      <div class="col-md-4">
+
+        {{.Sidebar}}
+
+      </div>
+
+    </div>
+    <!-- /.row -->
+
+  </div>
+  <!-- /.container -->
+
+  <!-- Footer -->
+  {{.Footer}}
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="/resources/vendor/jquery/jquery.min.js"></script>
+  <script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+  <script src="/resources/scripts/detail.js"></script>
 </body>
+
 </html>

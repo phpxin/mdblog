@@ -20,6 +20,7 @@ type Config struct {
 	Storagepath string `json:"storagepath"`
 	Resourcepath string `json:"resourcepath"`
 	Docroot string `json:"docroot"`
+	Webhost string `json:"webhost"`
 }
 
 func ParseConfig(cpath string) error {

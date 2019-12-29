@@ -1,10 +1,10 @@
 package conf
 
 import (
-	"os"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 )
 
 var (
@@ -21,6 +21,7 @@ type Config struct {
 	Resourcepath string `json:"resourcepath"`
 	Docroot string `json:"docroot"`
 	Webhost string `json:"webhost"`
+	Adminkey string `json:"adminkey"`
 }
 
 func ParseConfig(cpath string) error {

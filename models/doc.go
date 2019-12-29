@@ -48,11 +48,6 @@ func DocSaveOrRepl(doc *Doc) bool {
 	db.Where("hash=?", doc.Hash).First(result)
 	now := time.Now().Unix()
 	if result.Id>0 {
-		//if result.EditedAt<doc.EditedAt {
-		//
-		//
-		//	log.Debug("", "edited %s", doc.Path)
-		//}
 
 		result.Path = doc.Path
 		result.Title = doc.Title

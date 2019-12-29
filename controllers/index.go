@@ -62,14 +62,3 @@ func (ctrl *IndexController) Index(ctx *core.HttpContext) (resp *core.HttpRespon
 		keywords,
 	})
 }
-
-func (ctrl *IndexController) Regenerate(ctx *core.HttpContext) (resp *core.HttpResponse) {
-	err := core.GenerateTreeFolder()
-	if err!=nil {
-		return core.ApiError(core.API_ERR_MSG, err.Error())
-	}
-
-	return core.ApiSuccess(map[string]interface{}{
-		"msg":"generate success",
-	})
-}

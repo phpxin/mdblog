@@ -1,6 +1,12 @@
 {
-  "rpchost":"127.0.0.1:8010",
+  "rpchost":":8010",
+  "dbuser":"root",
+  "dbpassword":"password",
+  "dbaddr":"127.0.0.1",
+  "dbname":"mdblog",
   "storagepath": "./storage",
   "resourcepath": "./resources",
-  "docroot": "/data/docroot"
+  "docroot": "/data/docroot",
+  "webhost": "127.0.0.1", # For safety session
+  "adminkey": "11111"  # This Is An Important Setting For Doing Some System Level Action
 }

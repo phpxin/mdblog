@@ -28,22 +28,23 @@ func main() {
 	// 2. 初始化日志
 	logger.InitLogger(conf.ConfigInst.Storagepath+"/logs", "20060102")
 
-	// 模型初始化
+	// 3. 模型初始化
 	model.InitModel()
 
-	// 初始化文档结构树
+	// 4. 初始化文档结构树
 	err = core.GenerateTreeFolder()
 	if err!=nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
-	// 3. 加载路由
+	// 5. 加载路由
 	core.Router(&controllers.BlogController{})
 	core.Router(&controllers.IndexController{})
 	core.Router(&controllers.TestController{})
+	core.Router(&controllers.AdminController{})
 
-	// 4. 初始化 WEB 服务
+	// 6. 初始化 WEB 服务
 	core.InitServer()
 
 }

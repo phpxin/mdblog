@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/phpxin/mdblog/conf"
 	"github.com/phpxin/mdblog/controllers"
 	"github.com/phpxin/mdblog/core"
 	model "github.com/phpxin/mdblog/models"
 	"github.com/phpxin/mdblog/tools/logger"
-	"os"
 )
 
 func main() {
@@ -20,8 +21,8 @@ func main() {
 
 	// 1. 解析配置文件
 	err := conf.ParseConfig(confpath)
-	if err!=nil {
-		fmt.Println("err : parse config failed")
+	if err != nil {
+		fmt.Println("err : parse config failed", err)
 		os.Exit(1)
 	}
 
@@ -33,7 +34,7 @@ func main() {
 
 	// 4. 初始化文档结构树
 	err = core.GenerateTreeFolder()
-	if err!=nil {
+	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}

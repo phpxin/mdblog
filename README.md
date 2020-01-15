@@ -11,8 +11,8 @@
 > ./mdblog conf/conf.json    
 
 ## linux 环境发布
-> GOARCH=amd64 GOOS=linux go build -o mdblog-linux .     
-> pkill mdblog-linux   
-> nohup ./mdblog-linux ./conf/conf.json >mdblog-linux.log &    
+> GOARCH=amd64 GOOS=linux go build -o mdblog_amd64 .     
+> pkill mdblog_amd64   
+> nohup ./mdblog_amd64 ./conf.json >mdblog_amd64.log &    
 > 
 

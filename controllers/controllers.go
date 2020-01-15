@@ -11,13 +11,27 @@ import (
 	"sort"
 )
 
-func footer() string {
-	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath+"/htmls/footer.html")
+func analytics() string {
+	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath + "/htmls/analytics.html")
 	//执行模板
 	buf := make([]byte, 0)
 	wbf := bytes.NewBuffer(buf)
 	err := t.Execute(wbf, nil)
-	if err!=nil {
+	if err != nil {
+		log.Error("", "read template wrong, %s", err.Error())
+		return ""
+	}
+
+	return wbf.String()
+}
+
+func footer() string {
+	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath + "/htmls/footer.html")
+	//执行模板
+	buf := make([]byte, 0)
+	wbf := bytes.NewBuffer(buf)
+	err := t.Execute(wbf, nil)
+	if err != nil {
 		log.Error("", "read template wrong, %s", err.Error())
 		return ""
 	}
@@ -26,12 +40,12 @@ func footer() string {
 }
 
 func nav() string {
-	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath+"/htmls/nav.html")
+	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath + "/htmls/nav.html")
 	//执行模板
 	buf := make([]byte, 0)
 	wbf := bytes.NewBuffer(buf)
 	err := t.Execute(wbf, nil)
-	if err!=nil {
+	if err != nil {
 		log.Error("", "read template wrong, %s", err.Error())
 		return ""
 	}
@@ -42,36 +56,36 @@ func nav() string {
 func sidebar(submap map[string]*core.TreeFolder, hotArticles []*model.HotDoc) string {
 
 	subjects := make([]*core.TreeFolder, 0)
-	sublen:=len(submap)
+	sublen := len(submap)
 	subKeys := make([]string, sublen)
-	i:=0
-	for k,_ := range submap {
+	i := 0
+	for k, _ := range submap {
 		subKeys[i] = k
 		i++
 	}
 
 	sort.Strings(subKeys)
 
-	for _,k := range subKeys {
+	for _, k := range subKeys {
 		subjects = append(subjects, submap[k])
 	}
 
-	half := int(math.Ceil(float64(len(subjects))/2))
+	half := int(math.Ceil(float64(len(subjects)) / 2))
 
-	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath+"/htmls/sidebar.html")
+	t, _ := template.ParseFiles(conf.ConfigInst.Resourcepath + "/htmls/sidebar.html")
 	//执行模板
 	buf := make([]byte, 0)
 	wbf := bytes.NewBuffer(buf)
-	err := t.Execute(wbf, struct{
+	err := t.Execute(wbf, struct {
 		HotArticles []*model.HotDoc
-		Subjects1 []*core.TreeFolder
-		Subjects2 []*core.TreeFolder
+		Subjects1   []*core.TreeFolder
+		Subjects2   []*core.TreeFolder
 	}{
-		hotArticles ,
+		hotArticles,
 		subjects[:half],
 		subjects[half:],
 	})
-	if err!=nil {
+	if err != nil {
 		log.Error("", "read template wrong, %s", err.Error())
 		return ""
 	}

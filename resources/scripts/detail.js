@@ -4,7 +4,6 @@ hljs.configure({
 
 document.addEventListener('DOMContentLoaded', (event) => {
     document.querySelectorAll('code').forEach((block) => {
-        console.log(block);
 
         hljs.highlightBlock(block);
 

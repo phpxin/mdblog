@@ -13,20 +13,19 @@ import (
 )
 
 type BlogController struct {
-
 }
 
 func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpResponse) {
 
-	subject,_ := ctx.GetString("subject", "")
+	subject, _ := ctx.GetString("subject", "")
 
-	obj,ok := core.SubjectIndexer[subject]
+	obj, ok := core.SubjectIndexer[subject]
 	if !ok {
 		return core.HtmlResponse("errors/404", nil)
 	}
 
-	pagen,err := ctx.GetInt32("p", 1)
-	if err!=nil {
+	pagen, err := ctx.GetInt32("p", 1)
+	if err != nil {
 		pagen = 1
 	}
 
@@ -34,24 +33,24 @@ func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpRespons
 
 	subjects := make(map[string]*core.TreeFolder)
 
-	for _,item := range obj.Children {
-		if len(item.Children)>0 {
+	for _, item := range obj.Children {
+		if len(item.Children) > 0 {
 			subjects[item.PathHash] = item
-		}else{
+		} else {
 			//articles = append(articles, item)
 		}
 	}
 
-	articles,amount := model.GetDocsBySubject(subject, pagen, limit)
+	articles, amount := model.GetDocsBySubject(subject, pagen, limit)
 
 	var prevPage int32 = -1
 	var nextPage int32 = -1
 
-	if pagen>1 {
-		prevPage = pagen-1
+	if pagen > 1 {
+		prevPage = pagen - 1
 	}
 	if pagen*limit < amount {
-		nextPage = pagen+1
+		nextPage = pagen + 1
 	}
 
 	hot := model.GetHotRanging()
@@ -59,23 +58,30 @@ func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpRespons
 	sidebar := sidebar(subjects, hot)
 	nav := nav()
 	footer := footer()
+	analytics := analytics()
 
-	return core.HtmlResponse("subject", struct{
-		Sidebar template.HTML
-		Nav template.HTML
-		Footer template.HTML
-		Articles []*model.Doc
+	return core.HtmlResponse("subject", struct {
+		Sidebar     template.HTML
+		Nav         template.HTML
+		Footer      template.HTML
+		Analytics   template.HTML
+		Articles    []*model.Doc
 		SubjectHash string
-		Title string
-		PrevPage int32
-		NextPage int32
+		Title       string
+		Desc        string
+		Intro       string
+		PrevPage    int32
+		NextPage    int32
 	}{
-		template.HTML(sidebar) ,
-		template.HTML(nav) ,
-		template.HTML(footer) ,
+		template.HTML(sidebar),
+		template.HTML(nav),
+		template.HTML(footer),
+		template.HTML(analytics),
 		articles,
 		subject,
 		obj.Title,
+		obj.Desc,
+		obj.Intro,
 		prevPage,
 		nextPage,
 	})
@@ -83,18 +89,17 @@ func (ctrl *BlogController) Index(ctx *core.HttpContext) (resp *core.HttpRespons
 
 func (ctrl *BlogController) Detail(ctx *core.HttpContext) (resp *core.HttpResponse) {
 
+	mdname, _ := ctx.GetString("md", "")
 
-	mdname,_ := ctx.GetString("md", "")
-
-	obj,ok := model.GetDoc(mdname)
+	obj, ok := model.GetDoc(mdname)
 	if !ok {
 		return core.HtmlResponse("errors/404", nil)
 	}
 
-	contents,_ := ioutil.ReadFile(conf.ConfigInst.Docroot+"/"+obj.Path)
+	contents, _ := ioutil.ReadFile(conf.ConfigInst.Docroot + "/" + obj.Path)
 	output := blackfriday.Run(contents)
 
-	title:=obj.Title
+	title := obj.Title
 	title = strings.Replace(title, "-", " ", -1)
 	title = strings.Replace(title, ".md", "", -1)
 
@@ -109,6 +114,7 @@ func (ctrl *BlogController) Detail(ctx *core.HttpContext) (resp *core.HttpRespon
 	sidebar := sidebar(core.SubjectIndexer, hot)
 	nav := nav()
 	footer := footer()
+	analytics := analytics()
 
 	editedAt := time.Unix(obj.EditedAt, 0).Format("Mon Jan 2,2006 at 15:04")
 
@@ -143,43 +149,47 @@ func (ctrl *BlogController) Detail(ctx *core.HttpContext) (resp *core.HttpRespon
 	//	}
 	//}
 
-	clickCount:=recordArticleLog(ctx, obj)
+	clickCount := recordArticleLog(ctx, obj)
 
-	return core.HtmlResponse("detail", struct{
-		Title string
-		Intro string
-		Desc string
-		Contents template.HTML
-		EditedAt string
-		Img string
-		Sidebar template.HTML
-		Nav template.HTML
-		Footer template.HTML
+	return core.HtmlResponse("detail", struct {
+		Title      string
+		HashStr    string
+		Intro      string
+		Desc       string
+		Contents   template.HTML
+		EditedAt   string
+		Img        string
+		Sidebar    template.HTML
+		Nav        template.HTML
+		Footer     template.HTML
+		Analytics  template.HTML
 		ClickCount int64
 	}{
 		title,
+		obj.Hash,
 		obj.Intro,
 		obj.Desc,
-		template.HTML(string(output)) ,
+		template.HTML(string(output)),
 		editedAt,
 		base64img,
-		template.HTML(sidebar) ,
-		template.HTML(nav) ,
-		template.HTML(footer) ,
+		template.HTML(sidebar),
+		template.HTML(nav),
+		template.HTML(footer),
+		template.HTML(analytics),
 		clickCount,
 	})
 }
 
 //记录浏览
-func recordArticleLog(ctx *core.HttpContext,doc *model.Doc) int64 {
+func recordArticleLog(ctx *core.HttpContext, doc *model.Doc) int64 {
 	id := doc.Id
 
 	sessid := ctx.SessionId
 	now := time.Now().Unix()
 	ua := ctx.RawReq.UserAgent()
 
-	artlog,ok := model.GetArtlog(sessid, id)
-	if ok && artlog.CreatedAt+(60*5)>now {
+	artlog, ok := model.GetArtlog(sessid, id)
+	if ok && artlog.CreatedAt+(60*5) > now {
 		return model.GetClickCount(doc.Hash) //同一IP地址、同一浏览器、同一文章距离上次浏览不足5分钟,不统计
 	}
 

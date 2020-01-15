@@ -5,8 +5,15 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <meta name="description" content="{{.Title}},{{.Intro}}">
+  <meta name="author" content="Leo">
+  <meta name="keywords" content="{{.Desc}}" />
+
+  <meta property="og:type" content="个人博客" />
+  <meta property="og:title" content="{{.Title}} - Leo's Blog" />
+  <meta property="og:url" content="https://blog.dream128.cn/blog/detail?md={{.HashStr}}" />
+  <meta property="og:site_name" content="https://blog.dream128.cn" />
+  <meta property="og:description" content="{{.Title}},{{.Intro}}" />
 
   <title>{{.Title}} - Leo's Blog</title>
 
@@ -35,6 +42,8 @@
       line-height: 28px;
     }
   </style>
+
+  {{.Analytics}}
 </head>
 
 <body>

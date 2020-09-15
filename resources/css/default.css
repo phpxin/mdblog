@@ -1,3 +1,17 @@
 .hot-article-i:hover{
     cursor: pointer;
 }
+
+/* 护眼模式 */
+
+body{
+    background-color: #f5f5d5;
+}
+
+.card-header{
+    background-color: #e2e2c5;
+}
+
+.card-body,.list-group li {
+    background-color: #f5f5d5;
+}

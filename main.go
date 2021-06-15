@@ -26,11 +26,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	fmt.Println("Parse config done.")
+
 	// 2. 初始化日志
 	logger.InitLogger(conf.ConfigInst.Storagepath+"/logs", "20060102")
 
+	fmt.Println("Init logger done.")
+
 	// 3. 模型初始化
 	model.InitModel()
+
+	fmt.Println("Init model done.")
 
 	// 4. 初始化文档结构树
 	err = core.GenerateTreeFolder()
@@ -39,11 +45,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	fmt.Println("Generate tree folder done.")
+
 	// 5. 加载路由
 	core.Router(&controllers.BlogController{})
 	core.Router(&controllers.IndexController{})
 	core.Router(&controllers.TestController{})
 	core.Router(&controllers.AdminController{})
+
+	fmt.Println("Load routers done.")
 
 	// 6. 初始化 WEB 服务
 	core.InitServer()

@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/phpxin/mdblog/conf"
 	"github.com/phpxin/mdblog/tools/log"
 	"github.com/phpxin/mdblog/tools/strutils"
@@ -36,7 +37,7 @@ type ApiRet struct {
 
 func InitServer() {
 	http.HandleFunc("/", RpcHandle)
-	err := http.ListenAndServe(conf.ConfigInst.RpcHost,nil)
+	err := http.ListenAndServe("127.0.0.1:10020",nil)
 	if err!=nil {
 		panic(err)
 	}
@@ -44,7 +45,11 @@ func InitServer() {
 
 // http 请求代理函数，路由函数
 func RpcHandle(w http.ResponseWriter, r *http.Request){
-	defer r.Body.Close()
+	defer func() {
+		_=r.Body.Close()
+	}()
+
+	fmt.Println("123")
 
 	if len(r.URL.Path)>9 && r.URL.Path[:10]=="/resources" {
 		contentType := "text/plain"
@@ -71,10 +76,12 @@ func RpcHandle(w http.ResponseWriter, r *http.Request){
 			return
 		}
 
-		defer fp.Close()
+		defer func() {
+			_=fp.Close()
+		}()
 
 		w.Header().Set("Content-Type", contentType)
-		io.Copy(w,fp) // io copy 会调用 sendfile 提升传输效率
+		_,_=io.Copy(w,fp) // io copy 会调用 sendfile 提升传输效率
 		return
 	}
 
@@ -117,7 +124,7 @@ func RpcHandle(w http.ResponseWriter, r *http.Request){
 	log.Info("performance", "use time %d nano", endTime-startTime)
 
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	w.Write(hRes.Content)
+	_,_=w.Write(hRes.Content)
 
 }
 
